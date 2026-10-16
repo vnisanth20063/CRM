@@ -45,7 +45,7 @@ function PageLoader() {
           className={`cinema-emblem ${stage >= 1 ? "reveal" : ""
             }`}
         >
-          <span>S</span>
+          <span>H</span>
           <span className="emblem-plus">+</span>
           <div className="emblem-ring" />
         </div>
@@ -55,7 +55,7 @@ function PageLoader() {
             }`}
         >
           <h1>
-            SMARTCRM <span>AI</span>
+            HIG AI <span>CRM</span>
           </h1>
         </div>
 

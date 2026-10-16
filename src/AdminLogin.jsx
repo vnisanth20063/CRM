@@ -78,7 +78,14 @@ export default function AdminLogin() {
       <section className="login-card">
         <div className="login-brand">
           <div className="login-logo">
-            S<span>+</span>
+            H<span>+</span>
+          </div>
+
+          <div>
+            <h2>
+              HIG <span>AI</span>
+            </h2>
+            <p>INTELLIGENCE. AUTOMATION. GROWTH.</p>
           </div>
 
           <div>
@@ -209,7 +216,7 @@ export default function AdminLogin() {
       </section>
 
       <footer className="login-footer">
-        <span>© 2026 SmartCRM AI</span>
+        <span>© 2026 HIG AI</span>
         <span>BUILT FOR BETTER RELATIONSHIPS</span>
       </footer>
     </main>

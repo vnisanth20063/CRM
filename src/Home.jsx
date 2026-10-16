@@ -1,9 +1,10 @@
+
 import { useEffect, useState } from "react";
-import "./Home.css";
 import { Lottie } from "lottie-react";
+import "./Home.css";
 
 const API_BASE_URL = (
-    import.meta.env.VITE_API_URL || ""
+    import.meta.env.VITE_API_URL || "http://localhost:5000"
 ).replace(/\/+$/, "");
 
 const services = [
@@ -45,6 +46,7 @@ export default function Home() {
     const [chatOpen, setChatOpen] = useState(false);
     const [showSuccess, setShowSuccess] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [handshakeAnimation, setHandshakeAnimation] = useState(null);
 
     const [formData, setFormData] = useState({
         name: "",
@@ -53,9 +55,7 @@ export default function Home() {
         message: "",
     });
 
-    // Load the Lottie JSON from the public folder.
-    const [handshakeAnimation, setHandshakeAnimation] = useState(null);
-
+    // Load the handshake animation from the public folder.
     useEffect(() => {
         let cancelled = false;
 
@@ -64,6 +64,7 @@ export default function Home() {
                 if (!response.ok) {
                     throw new Error("Could not load Lottie animation");
                 }
+
                 return response.json();
             })
             .then((data) => {
@@ -72,7 +73,10 @@ export default function Home() {
                 }
             })
             .catch((error) => {
-                console.error("Lottie animation loading failed:", error);
+                console.error(
+                    "Lottie animation loading failed:",
+                    error
+                );
             });
 
         return () => {
@@ -80,7 +84,7 @@ export default function Home() {
         };
     }, []);
 
-    // Choose how many service cards fit on the screen.
+    // Display 1, 2, or 3 service cards according to screen width.
     useEffect(() => {
         const updateCardsPerView = () => {
             if (window.innerWidth <= 600) {
@@ -93,10 +97,14 @@ export default function Home() {
         };
 
         updateCardsPerView();
+
         window.addEventListener("resize", updateCardsPerView);
 
         return () => {
-            window.removeEventListener("resize", updateCardsPerView);
+            window.removeEventListener(
+                "resize",
+                updateCardsPerView
+            );
         };
     }, []);
 
@@ -105,16 +113,18 @@ export default function Home() {
         services.length - cardsPerView
     );
 
-    // Keep the carousel position valid after resizing.
+    // Keep the carousel within valid limits after resizing.
     useEffect(() => {
         setActiveService((current) =>
             Math.min(current, maxServiceIndex)
         );
     }, [maxServiceIndex]);
 
-    // Automatically move the carousel every 3 seconds.
+    // Automatically advance the carousel every 3 seconds.
     useEffect(() => {
-        if (maxServiceIndex === 0) return;
+        if (maxServiceIndex === 0) {
+            return;
+        }
 
         const timer = setInterval(() => {
             setActiveService((current) =>
@@ -125,7 +135,14 @@ export default function Home() {
         return () => clearInterval(timer);
     }, [maxServiceIndex]);
 
-    // Update form fields.
+    // Calculate the carousel track width and position.
+    const carouselTrackStyle = {
+        width: `${(services.length / cardsPerView) * 100}%`,
+        transform: `translateX(-${activeService * (100 / services.length)
+            }%)`,
+    };
+
+    // Update the enquiry form.
     const handleChange = (event) => {
         const { name, value } = event.target;
 
@@ -139,7 +156,9 @@ export default function Home() {
     const handleSubmit = async (event) => {
         event.preventDefault();
 
-        if (isSubmitting) return;
+        if (isSubmitting) {
+            return;
+        }
 
         setIsSubmitting(true);
 
@@ -152,16 +171,21 @@ export default function Home() {
                         "Content-Type": "application/json",
                     },
                     body: JSON.stringify({
-                        name: formData.name,
-                        email: formData.email,
+                        name: formData.name.trim(),
+                        email: formData.email.trim(),
                         service: formData.service,
-                        requirements: formData.message,
+                        requirements: formData.message.trim(),
                     }),
                 }
             );
 
             if (!response.ok) {
-                throw new Error("Failed to submit enquiry");
+                const errorText = await response.text();
+
+                throw new Error(
+                    errorText ||
+                    `Request failed with status ${response.status}`
+                );
             }
 
             setChatOpen(false);
@@ -174,27 +198,25 @@ export default function Home() {
                 message: "",
             });
         } catch (error) {
-            console.error("Enquiry submission failed:", error);
+            console.error(
+                "Enquiry submission failed:",
+                error
+            );
 
             alert(
-                "Could not submit your enquiry. Check that your backend is running and try again."
+                "Could not submit your enquiry. Please check your connection and try again."
             );
         } finally {
             setIsSubmitting(false);
         }
     };
 
-    // Set the selected service in the enquiry form.
+    // Select a service when the visitor clicks Learn more.
     const selectService = (serviceTitle) => {
         setFormData((previous) => ({
             ...previous,
             service: serviceTitle,
         }));
-    };
-
-    // Carousel positioning.
-    const carouselStyle = {
-        transform: `translateX(-${activeService * (100 / services.length)}%)`,
     };
 
     return (
@@ -249,6 +271,7 @@ export default function Home() {
 
                     <div className="hero-trust">
                         <div className="trust-icon">✓</div>
+
                         <span>
                             One platform. Smarter decisions. Better growth.
                         </span>
@@ -280,13 +303,17 @@ export default function Home() {
                             <div className="stat-card">
                                 <span>Total Revenue</span>
                                 <strong>₹2,45,800</strong>
-                                <small className="positive">↗ 12.8%</small>
+                                <small className="positive">
+                                    ↗ 12.8%
+                                </small>
                             </div>
 
                             <div className="stat-card">
                                 <span>Total Customers</span>
                                 <strong>1,284</strong>
-                                <small className="positive">↗ 8.2%</small>
+                                <small className="positive">
+                                    ↗ 8.2%
+                                </small>
                             </div>
                         </div>
 
@@ -321,6 +348,7 @@ export default function Home() {
                                             stopColor="#9878ff"
                                             stopOpacity="0.35"
                                         />
+
                                         <stop
                                             offset="100%"
                                             stopColor="#9878ff"
@@ -381,15 +409,16 @@ export default function Home() {
 
                     <div className="floating-note">
                         <span className="note-icon">✦</span>
+
                         <div>
-                            <strong>AI Insights</strong>
+                            <strong></strong>
                             <p>Business trends at a glance</p>
                         </div>
                     </div>
                 </div>
             </section>
 
-            {/* Services */}
+            {/* Services carousel */}
             <section className="services-section" id="services">
                 <div className="section-heading">
                     <div className="eyebrow">
@@ -411,12 +440,16 @@ export default function Home() {
                     <div className="carousel-window">
                         <div
                             className="carousel-track"
-                            style={carouselStyle}
+                            style={carouselTrackStyle}
                         >
                             {services.map((service, index) => (
                                 <article
                                     className="service-card"
                                     key={service.title}
+                                    style={{
+                                        flexBasis: `${100 / services.length
+                                            }%`,
+                                    }}
                                 >
                                     <div className="service-image">
                                         <img
@@ -432,6 +465,7 @@ export default function Home() {
 
                                     <div className="service-card-content">
                                         <h3>{service.title}</h3>
+
                                         <p>{service.description}</p>
 
                                         <a
@@ -449,6 +483,7 @@ export default function Home() {
                         </div>
                     </div>
 
+                    {/* Carousel controls */}
                     <div className="carousel-controls">
                         <div className="carousel-dots">
                             {Array.from({
@@ -457,10 +492,13 @@ export default function Home() {
                                 <button
                                     key={index}
                                     type="button"
-                                    className={`carousel-dot ${activeService === index ? "active" : ""
+                                    className={`carousel-dot ${activeService === index
+                                        ? "active"
+                                        : ""
                                         }`}
                                     onClick={() => setActiveService(index)}
-                                    aria-label={`Show services starting at ${index + 1}`}
+                                    aria-label={`Show services starting at ${index + 1
+                                        }`}
                                     aria-current={
                                         activeService === index
                                             ? "true"
@@ -480,6 +518,7 @@ export default function Home() {
                                             : current - 1
                                     )
                                 }
+                                disabled={maxServiceIndex === 0}
                                 aria-label="Previous services"
                             >
                                 ←
@@ -494,6 +533,7 @@ export default function Home() {
                                             : current + 1
                                     )
                                 }
+                                disabled={maxServiceIndex === 0}
                                 aria-label="Next services"
                             >
                                 →
@@ -524,7 +564,9 @@ export default function Home() {
                     <div className="workflow-card">
                         <span className="step-number">01</span>
                         <div className="step-icon">◎</div>
+
                         <h3>Bring your data</h3>
+
                         <p>
                             Organize your customer and business information in
                             one place.
@@ -534,7 +576,9 @@ export default function Home() {
                     <div className="workflow-card">
                         <span className="step-number">02</span>
                         <div className="step-icon">✦</div>
+
                         <h3>Automate your work</h3>
+
                         <p>
                             Simplify repetitive tasks and streamline daily
                             business activities.
@@ -544,7 +588,9 @@ export default function Home() {
                     <div className="workflow-card">
                         <span className="step-number">03</span>
                         <div className="step-icon">↗</div>
+
                         <h3>Grow with insights</h3>
+
                         <p>
                             Use clear business information to make better
                             decisions.
@@ -623,7 +669,10 @@ export default function Home() {
                         </button>
                     </div>
 
-                    <form onSubmit={handleSubmit} className="chat-form">
+                    <form
+                        onSubmit={handleSubmit}
+                        className="chat-form"
+                    >
                         <p className="chat-question">
                             Hi there! 👋 Which service are you interested in?
                         </p>
@@ -655,7 +704,10 @@ export default function Home() {
                             </option>
                         </select>
 
-                        <label htmlFor="lead-name">Your name</label>
+
+                        <label htmlFor="lead-name">
+                            Your name
+                        </label>
 
                         <input
                             id="lead-name"
@@ -668,7 +720,9 @@ export default function Home() {
                             required
                         />
 
-                        <label htmlFor="lead-email">Email address</label>
+                        <label htmlFor="lead-email">
+                            Email address
+                        </label>
 
                         <input
                             id="lead-email"
@@ -681,7 +735,9 @@ export default function Home() {
                             required
                         />
 
-                        <label htmlFor="lead-message">Tell us more</label>
+                        <label htmlFor="lead-message">
+                            Tell us more
+                        </label>
 
                         <textarea
                             id="lead-message"
@@ -701,13 +757,14 @@ export default function Home() {
                             {isSubmitting
                                 ? "Submitting..."
                                 : "Submit enquiry"}
+
                             {!isSubmitting && <span>↗</span>}
                         </button>
                     </form>
                 </div>
             )}
 
-            {/* Lottie success popup */}
+            {/* Handshake success popup */}
             {showSuccess && (
                 <div
                     className="success-overlay"
@@ -726,16 +783,14 @@ export default function Home() {
                         </button>
 
                         {handshakeAnimation ? (
-                            <Lottie
-                                animationData={handshakeAnimation}
-                                autoplay
-                                loop={false}
-                                style={{
-                                    width: "220px",
-                                    height: "220px",
-                                    margin: "0 auto",
-                                }}
-                            />
+                            <div className="success-animation">
+                                <Lottie
+                                    src={handshakeAnimation}
+                                    autoplay
+                                    loop={false}
+                                    style={{ width: "100%", height: "100%" }}
+                                />
+                            </div>
                         ) : (
                             <div className="success-fallback" aria-hidden="true">
                                 ✓
@@ -759,7 +814,7 @@ export default function Home() {
                         <button
                             type="button"
                             className="success-button"
-                            onClick={() => setShowSuccess(false)}
+                            onClick={() => setShowSuccess(true)}
                         >
                             Continue exploring <span>→</span>
                         </button>

@@ -1213,10 +1213,15 @@
 }
 
 .success-animation {
+    width: min(220px, 65vw);
+    aspect-ratio: 1 / 1;
+    margin: 0 auto;
+}
+
+.success-animation svg {
+    display: block;
     width: 100%;
-    max-width: 240px;
-    height: 200px;
-    margin: 0 auto 12px;
+    height: 100%;
 }
 
 .success-eyebrow {
@@ -1279,5 +1284,449 @@
     .success-animation {
         max-width: 190px;
         height: 170px;
+    }
+}
+
+/* ========================================
+   GLOBAL ALIGNMENT — HIG AI
+======================================== */
+
+.crm-home {
+    width: 100%;
+    min-height: 100vh;
+    margin: 0 auto;
+    overflow-x: hidden;
+    box-sizing: border-box;
+}
+
+.crm-home *,
+.crm-home *::before,
+.crm-home *::after {
+    box-sizing: border-box;
+}
+
+.crm-home img,
+.crm-home svg {
+    max-width: 100%;
+}
+
+/* Consistent section width and alignment */
+.crm-home .hero,
+.crm-home .services-section,
+.crm-home .workflow-section,
+.crm-home .contact-section,
+.crm-home .footer,
+.crm-home .navbar {
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Navigation alignment */
+.crm-home .navbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    padding: 18px clamp(20px, 5vw, 80px);
+}
+
+.crm-home .logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+}
+
+.crm-home .nav-links {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(16px, 2.5vw, 32px);
+}
+
+.crm-home .nav-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+/* Hero alignment */
+.crm-home .hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    align-items: center;
+    gap: clamp(32px, 5vw, 72px);
+    padding: clamp(48px, 7vw, 100px) clamp(20px, 7vw, 100px);
+}
+
+.crm-home .hero-content {
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.crm-home .hero-content h1,
+.crm-home .hero-content p {
+    max-width: 100%;
+}
+
+.crm-home .hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 14px;
+}
+
+.crm-home .hero-trust {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.crm-home .dashboard-wrap {
+    position: relative;
+    width: 100%;
+    max-width: 560px;
+    min-width: 0;
+    margin: 0 auto;
+}
+
+.crm-home .dashboard {
+    width: 100%;
+}
+
+/* Section headings */
+.crm-home .section-heading {
+    width: 100%;
+    max-width: 760px;
+    margin: 0 auto 44px;
+    padding: 0 20px;
+    text-align: center;
+}
+
+.crm-home .section-heading .eyebrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+}
+
+.crm-home .section-heading h2,
+.crm-home .section-heading p {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Services alignment */
+.crm-home .services-section,
+.crm-home .workflow-section {
+    padding: clamp(56px, 8vw, 100px) clamp(20px, 5vw, 72px);
+}
+
+.crm-home .services-carousel {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.crm-home .carousel-window {
+    width: 100%;
+    overflow: hidden;
+}
+
+.crm-home .carousel-track {
+    display: flex;
+    align-items: stretch;
+    transition: transform 0.5s ease;
+}
+
+.crm-home .service-card {
+    min-width: 0;
+    height: auto;
+}
+
+.crm-home .service-card-content {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    height: 100%;
+}
+
+.crm-home .service-card-content p {
+    flex-grow: 1;
+}
+
+.crm-home .carousel-controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    margin-top: 28px;
+}
+
+.crm-home .carousel-dots,
+.crm-home .carousel-arrows {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Workflow cards */
+.crm-home .workflow-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    align-items: stretch;
+    gap: 24px;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.crm-home .workflow-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    min-width: 0;
+    height: 100%;
+}
+
+/* Contact alignment */
+.crm-home .contact-section {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: clamp(60px, 8vw, 100px) 24px;
+    text-align: center;
+}
+
+.crm-home .contact-content {
+    width: 100%;
+    max-width: 760px;
+    margin: 0 auto;
+}
+
+.crm-home .contact-content .eyebrow {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 9px;
+}
+
+.crm-home .contact-content h2,
+.crm-home .contact-content p {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Footer alignment */
+.crm-home .footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 20px;
+    padding: 24px clamp(20px, 5vw, 80px);
+}
+
+.crm-home .footer p {
+    margin: 0;
+}
+
+/* Floating chat button */
+.crm-home .chat-button {
+    position: fixed;
+    right: 24px;
+    bottom: 24px;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Enquiry panel */
+.crm-home .chat-panel {
+    position: fixed;
+    right: 24px;
+    bottom: 90px;
+    z-index: 999;
+    width: min(400px, calc(100vw - 32px));
+    max-height: calc(100dvh - 120px);
+    overflow-y: auto;
+}
+
+.crm-home .chat-form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.crm-home .chat-form input,
+.crm-home .chat-form select,
+.crm-home .chat-form textarea,
+.crm-home .chat-form button {
+    width: 100%;
+    max-width: 100%;
+}
+
+.crm-home .chat-form textarea {
+    resize: vertical;
+}
+
+/* Success popup alignment */
+.crm-home .success-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    overflow-y: auto;
+}
+
+.crm-home .success-card {
+    position: relative;
+    width: min(520px, 100%);
+    max-height: calc(100dvh - 40px);
+    overflow-y: auto;
+    margin: auto;
+    text-align: center;
+}
+
+.crm-home .success-animation {
+    width: min(220px, 65vw);
+    aspect-ratio: 1 / 1;
+    margin: 0 auto 16px;
+}
+
+.crm-home .success-animation svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+.crm-home .success-card .success-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    max-width: 100%;
+}
+
+/* ========================================
+   TABLET
+======================================== */
+
+@media (max-width: 900px) {
+    .crm-home .navbar {
+        flex-wrap: wrap;
+        gap: 18px;
+    }
+
+    .crm-home .hero {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 48px;
+    }
+
+    .crm-home .hero-content {
+        max-width: 700px;
+    }
+
+    .crm-home .dashboard-wrap {
+        max-width: 600px;
+    }
+
+    .crm-home .workflow-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+/* ========================================
+   MOBILE
+======================================== */
+
+@media (max-width: 600px) {
+    .crm-home .navbar {
+        justify-content: space-between;
+        padding: 16px 20px;
+    }
+
+    .crm-home .nav-links {
+        order: 3;
+        width: 100%;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 12px 18px;
+    }
+
+    .crm-home .nav-button {
+        font-size: 13px;
+    }
+
+    .crm-home .hero {
+        padding: 48px 20px;
+        gap: 36px;
+    }
+
+    .crm-home .hero-content h1 {
+        font-size: clamp(32px, 9vw, 46px);
+        line-height: 1.15;
+    }
+
+    .crm-home .hero-actions {
+        align-items: stretch;
+    }
+
+    .crm-home .hero-actions>a {
+        max-width: 100%;
+    }
+
+    .crm-home .dashboard-wrap {
+        width: 100%;
+    }
+
+    .crm-home .stats-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .crm-home .services-section,
+    .crm-home .workflow-section {
+        padding: 56px 20px;
+    }
+
+    .crm-home .section-heading {
+        margin-bottom: 32px;
+        padding: 0;
+    }
+
+    .crm-home .workflow-grid {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 18px;
+    }
+
+    .crm-home .carousel-controls {
+        flex-wrap: wrap;
+    }
+
+    .crm-home .footer {
+        flex-direction: column;
+        justify-content: center;
+        text-align: center;
+        gap: 14px;
+    }
+
+    .crm-home .chat-button {
+        right: 16px;
+        bottom: 16px;
+    }
+
+    .crm-home .chat-panel {
+        right: 16px;
+        bottom: 76px;
+        width: calc(100vw - 32px);
     }
 }
