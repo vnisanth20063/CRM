@@ -1,0 +1,54 @@
+.cat-chat-panel {
+    position: fixed;
+    right: 24px;
+    bottom: 115px;
+    z-index: 1000;
+
+    width: 320px;
+    max-width: calc(100vw - 32px);
+
+    overflow: hidden;
+    border-radius: 18px;
+    background: white;
+    color: #2d2633;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
+
+    animation: cat-chat-appear 0.2s ease-out;
+}
+
+.cat-chat-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+
+    padding: 16px;
+    background: #fff1d6;
+    font-weight: 700;
+}
+
+.cat-close {
+    border: none;
+    background: transparent;
+    font-size: 26px;
+    cursor: pointer;
+    color: #49352b;
+}
+
+.cat-chat-body {
+    padding: 18px;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+@keyframes cat-chat-appear {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
