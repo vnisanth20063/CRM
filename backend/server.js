@@ -1,4 +1,3 @@
-
 import express from "express";
 import cors from "cors";
 import mysql from "mysql2/promise";
@@ -6,7 +5,7 @@ import "dotenv/config";
 import jwt from "jsonwebtoken";
 
 const app = express();
-const PORT = 5000;
+const PORT = process.env.PORT || 5000;
 
 app.use(cors());
 app.use(express.json());
@@ -199,6 +198,6 @@ app.patch(
 );
 
 // Start the server after defining all routes
-app.listen(PORT, () => {
-    console.log(`Server running at http://localhost:${PORT}`);
+app.listen(PORT, "0.0.0.0", () => {
+    console.log(`SmartCRM backend is running on port ${PORT}`);
 });
