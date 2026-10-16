@@ -27,7 +27,7 @@ const db = await mysql.createConnection({
     database: process.env.DB_NAME,
     ssl: {
         ca: fs.readFileSync(
-            new URL("./certs/ca.pem", import.meta.url),
+            new URL("C:\Users\SRIRA\forget-me-not\smartcrm-ai\backend\certs\ca.pem", import.meta.url),
             "utf8"
         ),
         rejectUnauthorized: true,
