@@ -2,7 +2,9 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./AdminLogin.css";
 
-const API_URL = "http://localhost:5000/api/admin/login";
+// Use the backend URL configured in your Vite environment variables.
+const API_BASE_URL = (import.meta.env.VITE_API_URL || "").replace(/\/+$/, "");
+const API_URL = `${API_BASE_URL}/api/admin/login`;
 
 export default function AdminLogin() {
   const navigate = useNavigate();
@@ -18,6 +20,13 @@ export default function AdminLogin() {
 
     if (!password.trim()) {
       setError("Please enter your password.");
+      return;
+    }
+
+    if (!API_BASE_URL) {
+      setError(
+        "Backend URL is missing. Please configure VITE_API_URL."
+      );
       return;
     }
 
@@ -68,10 +77,14 @@ export default function AdminLogin() {
 
       <section className="login-card">
         <div className="login-brand">
-          <div className="login-logo">S<span>+</span></div>
+          <div className="login-logo">
+            S<span>+</span>
+          </div>
 
           <div>
-            <h2>SmartCRM <span>AI</span></h2>
+            <h2>
+              SmartCRM <span>AI</span>
+            </h2>
             <p>INTELLIGENCE. AUTOMATION. GROWTH.</p>
           </div>
         </div>
@@ -82,7 +95,9 @@ export default function AdminLogin() {
             ADMIN WORKSPACE
           </span>
 
-          <h1>Welcome back<span>.</span></h1>
+          <h1>
+            Welcome back<span>.</span>
+          </h1>
 
           <p>
             Sign in to manage your leads and access your
@@ -142,7 +157,9 @@ export default function AdminLogin() {
             className="login-submit"
             disabled={loading}
           >
-            <span>{loading ? "Signing in..." : "Access dashboard"}</span>
+            <span>
+              {loading ? "Signing in..." : "Access dashboard"}
+            </span>
 
             {!loading && (
               <svg

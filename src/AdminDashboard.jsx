@@ -1,9 +1,10 @@
-
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./AdminDashboard.css";
 
-const API_URL = "http://localhost:5000/api/leads";
+// Reads the deployed backend URL from the Vite environment variable.
+const API_BASE_URL = (import.meta.env.VITE_API_URL || "").replace(/\/+$/, "");
+const API_URL = `${API_BASE_URL}/api/leads`;
 
 const STATUSES = ["New", "Contacted", "Converted"];
 
@@ -55,6 +56,14 @@ function AdminDashboard() {
     const fetchLeads = useCallback(async () => {
         const token = getToken();
 
+        if (!API_BASE_URL) {
+            setError(
+                "Backend URL is missing. Please configure VITE_API_URL."
+            );
+            setLoading(false);
+            return;
+        }
+
         if (!token) {
             handleUnauthorized();
             return;
@@ -78,7 +87,9 @@ function AdminDashboard() {
             }
 
             if (!response.ok) {
-                throw new Error("Unable to load leads. Please try again.");
+                throw new Error(
+                    "Unable to load leads. Please try again."
+                );
             }
 
             const data = await response.json();
@@ -93,7 +104,9 @@ function AdminDashboard() {
 
             setLeads(leadList);
         } catch (err) {
-            setError(err.message || "Something went wrong.");
+            setError(
+                err.message || "Something went wrong."
+            );
         } finally {
             setLoading(false);
         }
@@ -150,6 +163,13 @@ function AdminDashboard() {
     const updateLeadStatus = async (lead, newStatus) => {
         const leadId = getLeadId(lead);
 
+        if (!API_BASE_URL) {
+            setError(
+                "Backend URL is missing. Please configure VITE_API_URL."
+            );
+            return;
+        }
+
         if (!leadId) {
             setError("This lead does not have a valid ID.");
             return;
@@ -196,7 +216,9 @@ function AdminDashboard() {
             }
 
             if (!response.ok) {
-                throw new Error("Could not update the lead status.");
+                throw new Error(
+                    "Could not update the lead status."
+                );
             }
 
             const result = await response.json().catch(() => null);
@@ -221,7 +243,9 @@ function AdminDashboard() {
             }
         } catch (err) {
             setLeads(previousLeads);
-            setError(err.message || "Status update failed.");
+            setError(
+                err.message || "Status update failed."
+            );
         } finally {
             setUpdatingLeadId(null);
         }
@@ -242,9 +266,12 @@ function AdminDashboard() {
                 />
             )}
 
-            <aside className={`crm-sidebar ${sidebarOpen ? "is-open" : ""}`}>
+            <aside
+                className={`crm-sidebar ${sidebarOpen ? "is-open" : ""}`}
+            >
                 <div className="crm-brand">
                     <div className="crm-brand-logo">H</div>
+
                     <div>
                         <h2>HIG CRM</h2>
                         <span>Customer management</span>
@@ -268,25 +295,32 @@ function AdminDashboard() {
                             document
                                 .getElementById("crm-leads")
                                 ?.scrollIntoView({ behavior: "smooth" });
+
                             setSidebarOpen(false);
                         }}
                     >
                         <span className="crm-nav-icon">♙</span>
                         All Leads
-                        <span className="crm-nav-count">{stats.total}</span>
+                        <span className="crm-nav-count">
+                            {stats.total}
+                        </span>
                     </button>
                 </nav>
 
                 <div className="crm-sidebar-bottom">
                     <div className="crm-admin-profile">
                         <div className="crm-avatar">A</div>
+
                         <div className="crm-admin-info">
                             <strong>Administrator</strong>
                             <span>Admin account</span>
                         </div>
                     </div>
 
-                    <button className="crm-logout-button" onClick={handleLogout}>
+                    <button
+                        className="crm-logout-button"
+                        onClick={handleLogout}
+                    >
                         <span>↪</span>
                         Sign out
                     </button>
@@ -309,7 +343,10 @@ function AdminDashboard() {
                         <span>Dashboard</span>
                     </div>
 
-                    <button className="crm-refresh-button" onClick={fetchLeads}>
+                    <button
+                        className="crm-refresh-button"
+                        onClick={fetchLeads}
+                    >
                         <span>↻</span>
                         Refresh
                     </button>
@@ -318,74 +355,132 @@ function AdminDashboard() {
                 <div className="crm-content">
                     <section className="crm-page-header">
                         <div className="crm-page-heading">
-                            <span className="crm-page-eyebrow">OVERVIEW</span>
+                            <span className="crm-page-eyebrow">
+                                OVERVIEW
+                            </span>
+
                             <h1>Welcome back, Admin 👋</h1>
-                            <p>Manage your customer enquiries and follow-ups.</p>
+
+                            <p>
+                                Manage your customer enquiries and follow-ups.
+                            </p>
                         </div>
                     </section>
 
                     {error && (
-                        <div className="crm-error-message" role="alert">
+                        <div
+                            className="crm-error-message"
+                            role="alert"
+                        >
                             <span>{error}</span>
-                            <button onClick={() => setError("")} aria-label="Dismiss error">
+
+                            <button
+                                onClick={() => setError("")}
+                                aria-label="Dismiss error"
+                            >
                                 ×
                             </button>
                         </div>
                     )}
 
-                    {/* KPI CARDS: displayed above the leads table */}
-                    <section className="crm-stats-grid" aria-label="Lead statistics">
+                    {/* Lead statistics */}
+                    <section
+                        className="crm-stats-grid"
+                        aria-label="Lead statistics"
+                    >
                         <article className="crm-stat-card">
                             <div className="crm-stat-top">
-                                <span className="crm-stat-label">Total Leads</span>
-                                <span className="crm-stat-icon purple">♙</span>
+                                <span className="crm-stat-label">
+                                    Total Leads
+                                </span>
+
+                                <span className="crm-stat-icon purple">
+                                    ♙
+                                </span>
                             </div>
+
                             <div className="crm-stat-value">
                                 {loading ? "—" : stats.total}
                             </div>
-                            <div className="crm-stat-caption">All customer enquiries</div>
+
+                            <div className="crm-stat-caption">
+                                All customer enquiries
+                            </div>
                         </article>
 
                         <article className="crm-stat-card">
                             <div className="crm-stat-top">
-                                <span className="crm-stat-label">New Leads</span>
-                                <span className="crm-stat-icon blue">✦</span>
+                                <span className="crm-stat-label">
+                                    New Leads
+                                </span>
+
+                                <span className="crm-stat-icon blue">
+                                    ✦
+                                </span>
                             </div>
+
                             <div className="crm-stat-value">
                                 {loading ? "—" : stats.newLeads}
                             </div>
-                            <div className="crm-stat-caption">Awaiting follow-up</div>
+
+                            <div className="crm-stat-caption">
+                                Awaiting follow-up
+                            </div>
                         </article>
 
                         <article className="crm-stat-card">
                             <div className="crm-stat-top">
-                                <span className="crm-stat-label">Contacted</span>
-                                <span className="crm-stat-icon orange">↗</span>
+                                <span className="crm-stat-label">
+                                    Contacted
+                                </span>
+
+                                <span className="crm-stat-icon orange">
+                                    ↗
+                                </span>
                             </div>
+
                             <div className="crm-stat-value">
                                 {loading ? "—" : stats.contacted}
                             </div>
-                            <div className="crm-stat-caption">Follow-up in progress</div>
+
+                            <div className="crm-stat-caption">
+                                Follow-up in progress
+                            </div>
                         </article>
 
                         <article className="crm-stat-card">
                             <div className="crm-stat-top">
-                                <span className="crm-stat-label">Converted</span>
-                                <span className="crm-stat-icon green">✓</span>
+                                <span className="crm-stat-label">
+                                    Converted
+                                </span>
+
+                                <span className="crm-stat-icon green">
+                                    ✓
+                                </span>
                             </div>
+
                             <div className="crm-stat-value">
                                 {loading ? "—" : stats.converted}
                             </div>
-                            <div className="crm-stat-caption">Successfully converted</div>
+
+                            <div className="crm-stat-caption">
+                                Successfully converted
+                            </div>
                         </article>
                     </section>
 
-                    {/* ALL LEADS TABLE: displayed below the KPI cards */}
-                    <section className="crm-leads-section" id="crm-leads">
+                    {/* Leads table */}
+                    <section
+                        className="crm-leads-section"
+                        id="crm-leads"
+                    >
                         <div className="crm-leads-header">
                             <div>
                                 <h2>All Leads</h2>
-                                <p>View and manage your customer enquiries.</p>
+
+                                <p>
+                                    View and manage your customer enquiries.
+                                </p>
                             </div>
 
                             <span className="crm-leads-total">
@@ -396,12 +491,15 @@ function AdminDashboard() {
                         <div className="crm-toolbar">
                             <div className="crm-search-wrapper">
                                 <span className="crm-search-icon">⌕</span>
+
                                 <input
                                     type="search"
                                     className="crm-search-input"
                                     placeholder="Search name, email, phone..."
                                     value={search}
-                                    onChange={(event) => setSearch(event.target.value)}
+                                    onChange={(event) =>
+                                        setSearch(event.target.value)
+                                    }
                                     aria-label="Search leads"
                                 />
                             </div>
@@ -409,12 +507,18 @@ function AdminDashboard() {
                             <select
                                 className="crm-status-filter"
                                 value={statusFilter}
-                                onChange={(event) => setStatusFilter(event.target.value)}
+                                onChange={(event) =>
+                                    setStatusFilter(event.target.value)
+                                }
                                 aria-label="Filter leads by status"
                             >
                                 <option value="All">All statuses</option>
+
                                 {STATUSES.map((status) => (
-                                    <option key={status} value={status}>
+                                    <option
+                                        key={status}
+                                        value={status}
+                                    >
                                         {status}
                                     </option>
                                 ))}
@@ -424,18 +528,28 @@ function AdminDashboard() {
                         {loading ? (
                             <div className="crm-state-message">
                                 <span className="crm-spinner" />
+
                                 <p>Loading customer enquiries...</p>
                             </div>
                         ) : leads.length === 0 ? (
                             <div className="crm-state-message">
                                 <div className="crm-empty-icon">♙</div>
+
                                 <h3>No leads yet</h3>
-                                <p>Customer enquiries will appear here when available.</p>
+
+                                <p>
+                                    Customer enquiries will appear here
+                                    when available.
+                                </p>
                             </div>
                         ) : filteredLeads.length === 0 ? (
                             <div className="crm-state-message">
                                 <h3>No matching leads</h3>
-                                <p>Try another search term or status filter.</p>
+
+                                <p>
+                                    Try another search term or status filter.
+                                </p>
+
                                 <button
                                     className="crm-reset-button"
                                     onClick={() => {
@@ -462,22 +576,44 @@ function AdminDashboard() {
                                     <tbody>
                                         {filteredLeads.map((lead) => {
                                             const leadId = getLeadId(lead);
-                                            const status = normalizeStatus(lead.status);
+                                            const status = normalizeStatus(
+                                                lead.status
+                                            );
+
                                             const customerName =
-                                                lead.name || lead.fullName || "Unnamed customer";
+                                                lead.name ||
+                                                lead.fullName ||
+                                                "Unnamed customer";
 
                                             return (
-                                                <tr key={leadId ?? `${lead.email}-${customerName}`}>
+                                                <tr
+                                                    key={
+                                                        leadId ??
+                                                        `${lead.email}-${customerName}`
+                                                    }
+                                                >
                                                     <td>
                                                         <div className="crm-customer-cell">
                                                             <div className="crm-customer-avatar">
-                                                                {customerName.charAt(0).toUpperCase()}
+                                                                {customerName
+                                                                    .charAt(0)
+                                                                    .toUpperCase()}
                                                             </div>
+
                                                             <div className="crm-customer-info">
-                                                                <strong>{customerName}</strong>
-                                                                <span>{lead.email || "No email provided"}</span>
+                                                                <strong>
+                                                                    {customerName}
+                                                                </strong>
+
+                                                                <span>
+                                                                    {lead.email ||
+                                                                        "No email provided"}
+                                                                </span>
+
                                                                 {lead.phone && (
-                                                                    <span>{lead.phone}</span>
+                                                                    <span>
+                                                                        {lead.phone}
+                                                                    </span>
                                                                 )}
                                                             </div>
                                                         </div>
@@ -485,7 +621,9 @@ function AdminDashboard() {
 
                                                     <td>
                                                         <span className="crm-service-name">
-                                                            {lead.service || lead.subject || "General enquiry"}
+                                                            {lead.service ||
+                                                                lead.subject ||
+                                                                "General enquiry"}
                                                         </span>
                                                     </td>
 
@@ -512,21 +650,36 @@ function AdminDashboard() {
                                                                 className="crm-row-status-select"
                                                                 aria-label={`Change status for ${customerName}`}
                                                                 value={status}
-                                                                disabled={updatingLeadId === leadId}
+                                                                disabled={
+                                                                    updatingLeadId ===
+                                                                    leadId
+                                                                }
                                                                 onChange={(event) =>
-                                                                    updateLeadStatus(lead, event.target.value)
+                                                                    updateLeadStatus(
+                                                                        lead,
+                                                                        event.target.value
+                                                                    )
                                                                 }
                                                             >
-                                                                {STATUSES.map((option) => (
-                                                                    <option key={option} value={option}>
-                                                                        {option}
-                                                                    </option>
-                                                                ))}
+                                                                {STATUSES.map(
+                                                                    (option) => (
+                                                                        <option
+                                                                            key={option}
+                                                                            value={option}
+                                                                        >
+                                                                            {option}
+                                                                        </option>
+                                                                    )
+                                                                )}
                                                             </select>
 
                                                             <button
                                                                 className="crm-view-button"
-                                                                onClick={() => setSelectedLead(lead)}
+                                                                onClick={() =>
+                                                                    setSelectedLead(
+                                                                        lead
+                                                                    )
+                                                                }
                                                                 aria-label={`View ${customerName}`}
                                                                 title="View details"
                                                             >
@@ -555,6 +708,7 @@ function AdminDashboard() {
                 </div>
             </main>
 
+            {/* Customer details modal */}
             {selectedLead && (
                 <div
                     className="crm-modal-backdrop"
@@ -570,8 +724,13 @@ function AdminDashboard() {
                     >
                         <div className="crm-modal-header">
                             <div>
-                                <span className="crm-page-eyebrow">CUSTOMER INFORMATION</span>
-                                <h2 id="crm-modal-title">Lead details</h2>
+                                <span className="crm-page-eyebrow">
+                                    CUSTOMER INFORMATION
+                                </span>
+
+                                <h2 id="crm-modal-title">
+                                    Lead details
+                                </h2>
                             </div>
 
                             <button
@@ -600,6 +759,7 @@ function AdminDashboard() {
                                         selectedLead.fullName ||
                                         "Unnamed customer"}
                                 </h3>
+
                                 <span>Customer enquiry</span>
                             </div>
                         </div>
@@ -607,16 +767,23 @@ function AdminDashboard() {
                         <div className="crm-details-grid">
                             <div className="crm-detail-item">
                                 <span>Email address</span>
-                                <strong>{selectedLead.email || "Not provided"}</strong>
+
+                                <strong>
+                                    {selectedLead.email || "Not provided"}
+                                </strong>
                             </div>
 
                             <div className="crm-detail-item">
                                 <span>Phone number</span>
-                                <strong>{selectedLead.phone || "Not provided"}</strong>
+
+                                <strong>
+                                    {selectedLead.phone || "Not provided"}
+                                </strong>
                             </div>
 
                             <div className="crm-detail-item">
                                 <span>Service</span>
+
                                 <strong>
                                     {selectedLead.service ||
                                         selectedLead.subject ||
@@ -626,6 +793,7 @@ function AdminDashboard() {
 
                             <div className="crm-detail-item">
                                 <span>Date received</span>
+
                                 <strong>
                                     {formatDate(
                                         selectedLead.createdAt ||
@@ -637,12 +805,14 @@ function AdminDashboard() {
 
                             <div className="crm-detail-item">
                                 <span>Status</span>
+
                                 <span
                                     className={`crm-status-badge ${normalizeStatus(
                                         selectedLead.status
                                     ).toLowerCase()}`}
                                 >
                                     <span className="crm-status-dot" />
+
                                     {normalizeStatus(selectedLead.status)}
                                 </span>
                             </div>
@@ -650,6 +820,7 @@ function AdminDashboard() {
 
                         <div className="crm-requirements">
                             <span>Requirements / Message</span>
+
                             <p>
                                 {selectedLead.requirements ||
                                     selectedLead.message ||
@@ -659,20 +830,30 @@ function AdminDashboard() {
                         </div>
 
                         <div className="crm-modal-actions">
-                            <label htmlFor="crm-modal-status">Update status</label>
+                            <label htmlFor="crm-modal-status">
+                                Update status
+                            </label>
+
                             <select
                                 id="crm-modal-status"
                                 className="crm-status-filter"
                                 value={normalizeStatus(selectedLead.status)}
                                 disabled={
-                                    updatingLeadId === getLeadId(selectedLead)
+                                    updatingLeadId ===
+                                    getLeadId(selectedLead)
                                 }
                                 onChange={(event) =>
-                                    updateLeadStatus(selectedLead, event.target.value)
+                                    updateLeadStatus(
+                                        selectedLead,
+                                        event.target.value
+                                    )
                                 }
                             >
                                 {STATUSES.map((status) => (
-                                    <option key={status} value={status}>
+                                    <option
+                                        key={status}
+                                        value={status}
+                                    >
                                         {status}
                                     </option>
                                 ))}
