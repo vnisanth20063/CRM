@@ -727,7 +727,7 @@ export default function Home() {
 
                         {handshakeAnimation ? (
                             <Lottie
-                                src="/handshake-success.json"
+                                animationData={handshakeAnimation}
                                 autoplay
                                 loop={false}
                                 style={{
