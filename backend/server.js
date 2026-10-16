@@ -3,16 +3,9 @@ import cors from "cors";
 import mysql from "mysql2/promise";
 import "dotenv/config";
 import jwt from "jsonwebtoken";
-import fs from "node:fs";
-import path from "node:path";
-import { fileURLToPath } from "node:url";
 
 const app = express();
 const PORT = process.env.PORT || 5000;
-
-// Get the folder containing this server.js file
-const currentFile = fileURLToPath(import.meta.url);
-const currentFolder = path.dirname(currentFile);
 
 app.use(cors());
 app.use(express.json());
@@ -26,19 +19,24 @@ console.log(
     "DB password configured:",
     Boolean(process.env.DB_PASSWORD)
 );
+console.log(
+    "DB SSL CA configured:",
+    Boolean(process.env.DB_SSL_CA)
+);
 
-// Read the Aiven CA certificate
-const caPath = path.join(currentFolder, "certs", "ca.pem");
+// Read the Aiven CA certificate from Render Environment
+const ca = process.env.DB_SSL_CA;
 
-if (!fs.existsSync(caPath)) {
+if (!ca) {
     throw new Error(
-        `Aiven CA certificate not found at: ${caPath}`
+        "DB_SSL_CA is missing in Render Environment"
     );
 }
 
-const caCertificate = fs.readFileSync(caPath, "utf8");
+// Handle certificate text containing escaped newline characters
+const caCertificate = ca.replace(/\\n/g, "\n");
 
-// Connect to MySQL using SSL certificate verification
+// Connect to MySQL using secure SSL verification
 const db = await mysql.createConnection({
     host: process.env.DB_HOST,
     port: Number(process.env.DB_PORT),
@@ -46,7 +44,7 @@ const db = await mysql.createConnection({
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
     ssl: {
-        ca: process.env.DB_SSL_CA?.replace(/\\n/g, "\n"),
+        ca: caCertificate,
         rejectUnauthorized: true,
     },
 });
