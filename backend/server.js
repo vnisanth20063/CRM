@@ -3,6 +3,7 @@ import cors from "cors";
 import mysql from "mysql2/promise";
 import "dotenv/config";
 import jwt from "jsonwebtoken";
+import fs from "node:fs";
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -25,6 +26,10 @@ const db = await mysql.createConnection({
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
     ssl: {
+        ca: fs.readFileSync(
+            new URL("./certs/ca.pem", import.meta.url),
+            "utf8"
+        ),
         rejectUnauthorized: true,
     },
 });
