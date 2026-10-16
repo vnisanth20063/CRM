@@ -28,15 +28,11 @@ console.log(
 const ca = process.env.DB_SSL_CA;
 
 if (!ca) {
-    throw new Error(
-        "DB_SSL_CA is missing in Render Environment"
-    );
+    throw new Error("DB_SSL_CA is missing");
 }
 
-// Handle certificate text containing escaped newline characters
 const caCertificate = ca.replace(/\\n/g, "\n");
 
-// Connect to MySQL using secure SSL verification
 const db = await mysql.createConnection({
     host: process.env.DB_HOST,
     port: Number(process.env.DB_PORT),
