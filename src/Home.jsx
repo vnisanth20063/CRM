@@ -2,7 +2,9 @@ import { useEffect, useState } from "react";
 import "./Home.css";
 import { Lottie } from "lottie-react";
 
-
+const API_BASE_URL = (
+    import.meta.env.VITE_API_URL || ""
+).replace(/\/+$/, "");
 
 const services = [
     {
