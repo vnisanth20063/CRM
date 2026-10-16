@@ -143,7 +143,7 @@ export default function Home() {
 
         try {
             const response = await fetch(
-                "http://localhost:5000/api/leads",
+                `${API_BASE_URL}/api/leads`,
                 {
                     method: "POST",
                     headers: {
