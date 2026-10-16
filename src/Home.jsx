@@ -151,7 +151,12 @@ export default function Home() {
                     headers: {
                         "Content-Type": "application/json",
                     },
-                    body: JSON.stringify(formData),
+                    body: JSON.stringify({
+                        name: formData.name,
+                        email: formData.email,
+                        service: formData.service,
+                        requirements: formData.message,
+                    }),
                 }
             );
 
