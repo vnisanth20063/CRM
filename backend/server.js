@@ -46,7 +46,15 @@ const db = await mysql.createConnection({
 });
 
 console.log("MySQL connected successfully!");
+const [dbInfo] = await db.query(
+    "SELECT DATABASE() AS databaseName, @@hostname AS serverHost, @@port AS serverPort"
+);
 
+console.log("Backend database details:", dbInfo[0]);
+
+const [tables] = await db.query("SHOW TABLES LIKE 'leads'");
+
+console.log("Backend can see leads table:", tables.length > 0);
 // Verify whether the admin is logged in
 function verifyAdmin(req, res, next) {
     const authHeader = req.headers.authorization;
