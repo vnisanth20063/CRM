@@ -10,6 +10,13 @@ const PORT = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
+// Check database configuration without printing secrets
+console.log("DB host:", process.env.DB_HOST);
+console.log("DB port:", process.env.DB_PORT);
+console.log("DB user configured:", Boolean(process.env.DB_USER));
+console.log("DB name configured:", Boolean(process.env.DB_NAME));
+console.log("DB password configured:", Boolean(process.env.DB_PASSWORD));
+
 // Connect to MySQL
 const db = await mysql.createConnection({
     host: process.env.DB_HOST,
@@ -21,6 +28,7 @@ const db = await mysql.createConnection({
         rejectUnauthorized: true,
     },
 });
+
 console.log("MySQL connected successfully!");
 
 // Verify whether the admin is logged in
@@ -65,10 +73,7 @@ app.get("/", (req, res) => {
 app.post("/api/admin/login", (req, res) => {
     const { password } = req.body;
 
-    if (
-        !process.env.ADMIN_PASSWORD ||
-        !process.env.JWT_SECRET
-    ) {
+    if (!process.env.ADMIN_PASSWORD || !process.env.JWT_SECRET) {
         return res.status(500).json({
             message: "Admin login is not configured",
         });
@@ -156,51 +161,47 @@ app.get("/api/leads", verifyAdmin, async (req, res) => {
 });
 
 // Protected route: update a lead's status
-app.patch(
-    "/api/leads/:id/status",
-    verifyAdmin,
-    async (req, res) => {
-        try {
-            const { id } = req.params;
-            const { status } = req.body;
+app.patch("/api/leads/:id/status", verifyAdmin, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { status } = req.body;
 
-            const allowedStatuses = [
-                "New",
-                "Contacted",
-                "Converted",
-            ];
+        const allowedStatuses = [
+            "New",
+            "Contacted",
+            "Converted",
+        ];
 
-            if (!allowedStatuses.includes(status)) {
-                return res.status(400).json({
-                    message: "Invalid lead status",
-                });
-            }
-
-            const [result] = await db.execute(
-                "UPDATE leads SET status = ? WHERE id = ?",
-                [status, id]
-            );
-
-            if (result.affectedRows === 0) {
-                return res.status(404).json({
-                    message: "Lead not found",
-                });
-            }
-
-            return res.status(200).json({
-                message: "Lead status updated successfully",
-            });
-        } catch (error) {
-            console.error("Database error:", error.message);
-
-            return res.status(500).json({
-                message: "Failed to update lead status",
+        if (!allowedStatuses.includes(status)) {
+            return res.status(400).json({
+                message: "Invalid lead status",
             });
         }
-    }
-);
 
-// Start the server after defining all routes
+        const [result] = await db.execute(
+            "UPDATE leads SET status = ? WHERE id = ?",
+            [status, id]
+        );
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({
+                message: "Lead not found",
+            });
+        }
+
+        return res.status(200).json({
+            message: "Lead status updated successfully",
+        });
+    } catch (error) {
+        console.error("Database error:", error.message);
+
+        return res.status(500).json({
+            message: "Failed to update lead status",
+        });
+    }
+});
+
+// Start server
 app.listen(PORT, "0.0.0.0", () => {
     console.log(`SmartCRM backend is running on port ${PORT}`);
 });
